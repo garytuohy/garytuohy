@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marathon Training Checker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- SETUP VIEW -->
+  <div id="view-setup" class="view active">
+    <div class="hero">
+      <div class="hero-icon">🏃</div>
+      <h1>Marathon Training Checker</h1>
+      <p class="subtitle">Connect Strava, set your race date, and see exactly where you stand in your training.</p>
+    </div>
+
+    <div class="card setup-card">
+      <h2>Get Started</h2>
+
+      <div class="form-group">
+        <label for="race-date">Race Date</label>
+        <input type="date" id="race-date" />
+      </div>
+
+      <div class="form-group">
+        <label for="training-plan">Training Plan</label>
+        <select id="training-plan">
+          <option value="hal-higdon-novice-1">Hal Higdon Novice 1 (18 weeks)</option>
+          <option value="hal-higdon-novice-2">Hal Higdon Novice 2 (18 weeks)</option>
+          <option value="hal-higdon-intermediate-1">Hal Higdon Intermediate 1 (18 weeks)</option>
+          <option value="pfitz-12-55">Pfitzinger 12/55 (12 weeks, up to 55 mi/wk)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="units">Distance Units</label>
+        <select id="units">
+          <option value="km">Kilometres</option>
+          <option value="miles">Miles</option>
+        </select>
+      </div>
+
+      <div class="divider"><span>Connect Strava</span></div>
+
+      <div class="form-group">
+        <label for="client-id">
+          Strava Client ID
+          <a href="https://www.strava.com/settings/api" target="_blank" class="help-link">Get yours →</a>
+        </label>
+        <input type="text" id="client-id" placeholder="e.g. 12345" />
+      </div>
+
+      <div class="form-group">
+        <label for="client-secret">
+          Strava Client Secret
+          <span class="hint">Stored locally, never sent anywhere</span>
+        </label>
+        <input type="password" id="client-secret" placeholder="Your app secret" />
+      </div>
+
+      <button id="btn-connect-strava" class="btn btn-strava" onclick="connectStrava()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/></svg>
+        Connect with Strava
+      </button>
+
+      <p class="setup-note">
+        Already have a token?
+        <button class="link-btn" onclick="showTokenEntry()">Enter access token manually</button>
+      </p>
+
+      <div id="token-entry" class="hidden">
+        <div class="form-group">
+          <label for="manual-token">Access Token</label>
+          <input type="text" id="manual-token" placeholder="Paste your Strava access token" />
+        </div>
+        <button class="btn btn-primary" onclick="saveManualToken()">Save & Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OAUTH CALLBACK VIEW -->
+  <div id="view-callback" class="view">
+    <div class="hero">
+      <div class="loading-spinner"></div>
+      <h2>Connecting to Strava…</h2>
+      <p id="callback-status">Exchanging authorization code…</p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div id="view-dashboard" class="view">
+    <header class="dash-header">
+      <div class="dash-title">
+        <span class="dash-icon">🏃</span>
+        <div>
+          <h1>Marathon Training</h1>
+          <p id="dash-subtitle">Loading…</p>
+        </div>
+      </div>
+      <div class="dash-actions">
+        <button class="btn btn-sm" onclick="refreshActivities()">↻ Refresh</button>
+        <button class="btn btn-sm btn-ghost" onclick="showSettings()">⚙ Settings</button>
+      </div>
+    </header>
+
+    <!-- Status Banner -->
+    <div id="status-banner" class="status-banner"></div>
+
+    <!-- Key Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Training Week</div>
+        <div class="stat-value" id="stat-week">–</div>
+        <div class="stat-sub" id="stat-week-sub">of 18</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Days to Race</div>
+        <div class="stat-value" id="stat-days">–</div>
+        <div class="stat-sub" id="stat-race-name">Race Day</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This Week</div>
+        <div class="stat-value" id="stat-this-week">–</div>
+        <div class="stat-sub" id="stat-this-week-target">of – planned</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Long Run</div>
+        <div class="stat-value" id="stat-long-run">–</div>
+        <div class="stat-sub" id="stat-long-run-target">of – planned</div>
+      </div>
+    </div>
+
+    <!-- This Week Progress -->
+    <div class="card">
+      <div class="card-header">
+        <h3>This Week's Progress</h3>
+        <span id="week-range" class="card-meta"></span>
+      </div>
+      <div id="week-runs" class="run-list"></div>
+      <div id="week-progress-bar" class="progress-wrap">
+        <div class="progress-labels">
+          <span id="progress-actual-label">0 km done</span>
+          <span id="progress-target-label">0 km planned</span>
+        </div>
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Mileage Chart -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Weekly Mileage</h3>
+        <span class="card-meta">Last 8 weeks vs plan</span>
+      </div>
+      <div id="weekly-chart" class="chart-container"></div>
+    </div>
+
+    <!-- Upcoming Weeks -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Upcoming Weeks</h3>
+      </div>
+      <div id="upcoming-weeks" class="upcoming-list"></div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Recent Runs</h3>
+        <span id="activities-count" class="card-meta"></span>
+      </div>
+      <div id="recent-activities" class="run-list"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS VIEW -->
+  <div id="view-settings" class="view">
+    <header class="dash-header">
+      <button class="btn btn-sm btn-ghost" onclick="showDashboard()">← Back</button>
+      <h2>Settings</h2>
+    </header>
+    <div class="card">
+      <h3>Training Setup</h3>
+      <div class="form-group">
+        <label for="settings-race-date">Race Date</label>
+        <input type="date" id="settings-race-date" />
+      </div>
+      <div class="form-group">
+        <label for="settings-plan">Training Plan</label>
+        <select id="settings-plan">
+          <option value="hal-higdon-novice-1">Hal Higdon Novice 1 (18 weeks)</option>
+          <option value="hal-higdon-novice-2">Hal Higdon Novice 2 (18 weeks)</option>
+          <option value="hal-higdon-intermediate-1">Hal Higdon Intermediate 1 (18 weeks)</option>
+          <option value="pfitz-12-55">Pfitzinger 12/55 (12 weeks, up to 55 mi/wk)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="settings-units">Units</label>
+        <select id="settings-units">
+          <option value="km">Kilometres</option>
+          <option value="miles">Miles</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+    </div>
+    <div class="card">
+      <h3>Strava Connection</h3>
+      <div id="strava-status-msg" class="strava-status"></div>
+      <button class="btn btn-strava" onclick="reconnectStrava()">Reconnect Strava</button>
+      <button class="btn btn-danger" onclick="disconnectStrava()">Disconnect</button>
+    </div>
+    <div class="card">
+      <h3>Reset</h3>
+      <p class="hint">Clear all saved data and start over.</p>
+      <button class="btn btn-danger" onclick="resetAll()">Reset Everything</button>
+    </div>
+  </div>
+
+  <!-- ERROR TOAST -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

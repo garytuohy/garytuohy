@@ -1,0 +1,444 @@
+/* ── Marathon Training Checker ── */
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --border: #2e334d;
+  --text: #e8ecf5;
+  --text-muted: #8891b0;
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --strava: #fc4c02;
+  --good: #22c55e;
+  --warn: #f59e0b;
+  --bad: #ef4444;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── Views ── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── Setup ── */
+#view-setup {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.hero {
+  text-align: center;
+  padding: 2rem 0 1.5rem;
+}
+
+.hero-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+
+.hero h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero .subtitle {
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.setup-card { margin-top: 1rem; }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.card-header h3 { font-size: 1rem; font-weight: 600; }
+.card-meta { color: var(--text-muted); font-size: 0.8rem; }
+
+/* ── Form ── */
+.form-group { margin-bottom: 1rem; }
+
+label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.95rem;
+  padding: 0.6rem 0.8rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input:focus, select:focus { border-color: var(--primary); }
+select option { background: var(--surface2); }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn:hover { background: #2d3145; border-color: #3d4260; }
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+
+.btn-strava {
+  width: 100%;
+  background: var(--strava);
+  border-color: var(--strava);
+  color: #fff;
+  justify-content: center;
+  font-size: 1rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+}
+.btn-strava:hover { background: #e0420c; border-color: #e0420c; }
+
+.btn-danger {
+  background: transparent;
+  border-color: var(--bad);
+  color: var(--bad);
+}
+.btn-danger:hover { background: rgba(239,68,68,.1); }
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+}
+.btn-ghost:hover { background: var(--surface2); color: var(--text); }
+
+.btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+/* ── Divider ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.help-link { color: var(--primary); font-size: 0.8rem; text-decoration: none; }
+.help-link:hover { text-decoration: underline; }
+
+.hint { color: var(--text-muted); font-size: 0.78rem; }
+
+.setup-note {
+  text-align: center;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ── Dashboard ── */
+#view-dashboard, #view-settings {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem 1rem 4rem;
+}
+
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-title { display: flex; align-items: center; gap: 0.75rem; }
+.dash-icon { font-size: 1.75rem; }
+.dash-title h1 { font-size: 1.25rem; font-weight: 700; }
+.dash-title p { color: var(--text-muted); font-size: 0.82rem; margin-top: 0.1rem; }
+.dash-actions { display: flex; gap: 0.5rem; }
+
+/* ── Status Banner ── */
+.status-banner {
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.status-good  { background: rgba(34,197,94,.15);  color: var(--good); border: 1px solid rgba(34,197,94,.3);  }
+.status-warn  { background: rgba(245,158,11,.15); color: var(--warn); border: 1px solid rgba(245,158,11,.3); }
+.status-bad   { background: rgba(239,68,68,.15);  color: var(--bad);  border: 1px solid rgba(239,68,68,.3);  }
+.status-neutral { background: var(--surface); color: var(--text-muted); border: 1px solid var(--border); }
+
+/* ── Stats Grid ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+@media(min-width: 540px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+}
+
+.stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+.stat-value { font-size: 1.6rem; font-weight: 700; margin: 0.2rem 0 0.1rem; }
+.stat-sub   { font-size: 0.75rem; color: var(--text-muted); }
+
+/* ── Run List ── */
+.run-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.run-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.run-item:last-child { border-bottom: none; }
+
+.run-info { display: flex; flex-direction: column; gap: 0.1rem; }
+.run-name  { font-weight: 500; font-size: 0.92rem; }
+.run-date  { font-size: 0.78rem; color: var(--text-muted); }
+
+.run-stats { display: flex; align-items: center; gap: 0.75rem; text-align: right; }
+.run-dist  { font-weight: 600; font-size: 0.95rem; }
+.run-pace  { color: var(--text-muted); font-size: 0.82rem; }
+
+.empty-msg { color: var(--text-muted); font-size: 0.88rem; padding: 0.5rem 0; }
+
+/* ── Progress Bar ── */
+.progress-wrap { margin-top: 1rem; }
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+.progress-bar {
+  height: 10px;
+  background: var(--surface2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #a78bfa);
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+/* ── Weekly Chart ── */
+.chart-container { overflow-x: auto; }
+
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 120px;
+  padding-bottom: 24px; /* room for labels */
+  min-width: 300px;
+}
+
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  position: relative;
+}
+
+.chart-col-current .chart-label { color: var(--primary); font-weight: 700; }
+
+.chart-bars {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.bar-planned, .bar-actual {
+  flex: 1;
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+  transition: height 0.4s ease;
+}
+.bar-planned { background: var(--border); }
+.bar-actual  { background: var(--primary); }
+
+.chart-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  position: absolute;
+  bottom: 0;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.legend-item { display: flex; align-items: center; gap: 0.35rem; }
+.legend-dot  { width: 10px; height: 10px; border-radius: 2px; }
+.dot-planned { background: var(--border); }
+.dot-actual  { background: var(--primary); }
+
+/* ── Upcoming ── */
+.upcoming-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.upcoming-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.upcoming-item:last-child { border-bottom: none; }
+
+.upcoming-week { font-weight: 600; font-size: 0.9rem; }
+.upcoming-stats { font-size: 0.85rem; color: var(--text-muted); }
+.sep { margin: 0 0.2rem; }
+
+/* ── Strava Status ── */
+.strava-status {
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 0;
+  margin-bottom: 0.75rem;
+}
+.connected    { color: var(--good); }
+.disconnected { color: var(--bad);  }
+
+/* ── Settings ── */
+#view-settings { padding-top: 0.5rem; }
+#view-settings h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; }
+#view-settings .dash-header { margin-bottom: 1rem; }
+
+/* ── Callback ── */
+#view-callback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+#view-callback .hero { padding: 2rem; }
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  z-index: 999;
+  max-width: 90vw;
+  text-align: center;
+  animation: slideUp 0.2s ease;
+}
+.toast-info  { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+.toast-error { background: rgba(239,68,68,.2); border: 1px solid var(--bad); color: var(--bad); }
+.hidden { display: none !important; }
+
+@keyframes slideUp {
+  from { transform: translateX(-50%) translateY(12px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+}
+
+/* ── Misc ── */
+h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; }
+p  { color: var(--text-muted); }
